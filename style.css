@@ -1,7 +1,6 @@
-@font-face
-{
-  font-family: 'Perfect DOS VGA 437';
-  src: url('https://ryanries.dev/Perfect%20DOS%20VGA%20437.ttf') format('truetype');
+@font-face {
+	font-family: 'Perfect DOS VGA 437';
+	src: url('https://ryanries.github.io/Perfect%20DOS%20VGA%20437.ttf') format('truetype');
 }
 
 html, body {
