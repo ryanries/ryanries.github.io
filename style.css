@@ -6,7 +6,7 @@
 html, body {
   margin: 0px;
   height: 100%;
-  background-color:#0000A8;
+  background-color:#282C34;
   font-family: 'Perfect DOS VGA 437';
 }
 
@@ -32,7 +32,7 @@ html, body {
 }
 
 .box-title {
-  background: #0000A8 none repeat scroll 0 0;
+  background: #282C34 none repeat scroll 0 0;
   display: inline-block;
   padding-left: 16px;
   padding-top: 2px;
