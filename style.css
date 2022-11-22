@@ -10,21 +10,25 @@ html, body {
 }
 a:link {
 	color: #282C34;
-	background-color:#DDDDDD;
+	background-color: #DDDDDD;
+	text-decoration: none;
 }
 
 a:visited {
 	color: #282C34;
-	background-color:#DDDDDD;
+	background-color: #DDDDDD;
+	text-decoration: none;
 }
 
 a:hover {
 	color: #DDDDDD;
-	background-color:#282C34;
+	background-color: #282C34;
+	text-decoration: none;
 }
 
 a:active {
 	color: #DDDDDD;
-	background-color:#282C34;
+	background-color: #282C34;
+	text-decoration: none;
 }
 
