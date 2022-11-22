@@ -8,27 +8,35 @@ html, body {
 	font-family: 'Px Plus IBM VGA 8x16';
 	color: #DDDDDD;
 }
+
 a:link {
 	color: #282C34;
 	background-color: #DDDDDD;
 	text-decoration: none;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 a:visited {
 	color: #282C34;
 	background-color: #DDDDDD;
 	text-decoration: none;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 a:hover {
 	color: #DDDDDD;
 	background-color: #282C34;
 	text-decoration: none;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 a:active {
 	color: #DDDDDD;
 	background-color: #282C34;
 	text-decoration: none;
+	padding-left: 1px;
+	padding-right: 1px;
 }
-
