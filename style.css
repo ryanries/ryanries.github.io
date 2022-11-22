@@ -8,4 +8,23 @@ html, body {
 	font-family: 'Px Plus IBM VGA 8x16';
 	color: #DDDDDD;
 }
+a:link {
+	color: #282C34;
+	background-color:#DDDDDD;
+}
+
+a:visited {
+	color: #282C34;
+	background-color:#DDDDDD;
+}
+
+a:hover {
+	color: #DDDDDD;
+	background-color:#282C34;
+}
+
+a:active {
+	color: #DDDDDD;
+	background-color:#282C34;
+}
 
