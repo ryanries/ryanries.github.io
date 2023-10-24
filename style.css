@@ -11,32 +11,50 @@ html, body {
 
 a:link {
 	color: #282C34;
-	background-color: #DDDDDD;
-	text-decoration: none;
+	background-color: #DDDDDD;	
 	padding-left: 1px;
 	padding-right: 1px;
 }
 
 a:visited {
 	color: #282C34;
-	background-color: #DDDDDD;
-	text-decoration: none;
+	background-color: #DDDDDD;	
 	padding-left: 1px;
 	padding-right: 1px;
 }
 
 a:hover {
 	color: #DDDDDD;
-	background-color: #282C34;
-	text-decoration: none;
+	background-color: #282C34;	
 	padding-left: 1px;
 	padding-right: 1px;
 }
 
 a:active {
 	color: #DDDDDD;
-	background-color: #282C34;
-	text-decoration: none;
+	background-color: #282C34;	
 	padding-left: 1px;
 	padding-right: 1px;
+}
+
+.text-content {
+	padding-right: 370px;
+}
+
+.profile-photo {
+    width: 350px;         /* You can adjust this to your desired size */
+    height: 350px;        /* Make sure this is the same as the width to keep the circle aspect */
+	float: right;
+    border-radius: 50%;   /* This makes the photo circular */
+    position: absolute;   /* This allows you to position it anywhere on the page */
+    top: 10px;            /* Distance from the top */
+    right: 10px;          /* Distance from the right */
+    object-fit: cover;    /* Ensures that the image covers the entire element without being stretched */
+}
+
+footer {
+    flex-shrink: 0; /* Prevent the footer from shrinking */
+    width: 100%; /* Optional: You can set this to ensure the footer takes full width */    
+    text-align: left;
+    padding: 10px 0; /* Optional: Some padding for aesthetics */
 }
