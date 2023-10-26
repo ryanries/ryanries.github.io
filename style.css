@@ -58,3 +58,7 @@ footer {
     text-align: left;
     padding: 10px 0; /* Optional: Some padding for aesthetics */
 }
+
+h1 {
+	padding-bottom: 0px;
+}
