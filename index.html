@@ -53,5 +53,41 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 </div>
 <hr>
 <footer>Copyright &copy; 1982-2023 Joseph Ryan Ries</footer>
+<script>
+    // Function to fetch a single blog post and append to the blog container
+    async function fetchAndDisplayBlogPost(postFilename) {
+        try {
+            let response = await fetch(`posts/${postFilename}`);
+            let postContent = await response.text();
+            
+            let blogPostDiv = document.createElement('div');
+            blogPostDiv.innerHTML = postContent;
+            document.getElementById('blog-container').appendChild(blogPostDiv);
+        } catch (err) {
+            console.error(`Failed to fetch post: ${postFilename}`, err);
+        }
+    }
+
+    // Function to fetch the list of blog posts and display them
+    async function fetchAndDisplayAllBlogPosts() {
+        try {
+            // Fetching the contents.txt
+            let response = await fetch('posts/contents.txt');
+            let blogFileList = await response.text();
+            
+            // Splitting the text file content by new lines to get individual filenames
+            let blogFiles = blogFileList.trim().split(/\r?\n/);
+
+            for(let postFilename of blogFiles) {
+                await fetchAndDisplayBlogPost(postFilename); // Fetch and display each post
+            }
+        } catch (err) {
+            console.error('Failed to fetch contents.txt or display posts', err);
+        }
+    }
+
+    // Execute when the document is loaded
+    window.onload = fetchAndDisplayAllBlogPosts;
+</script>
 </body>
 </html>
