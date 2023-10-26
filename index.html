@@ -6,6 +6,13 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<script>
+	fetch('./posts/post-10-25-2023.html')
+    .then(response => response.text())
+    .then(content => {
+        document.getElementById('blog-container').innerHTML = content;
+    });
+</script>
 <div class="content-container">
 <div class="text-content">
 <p>Hello. You have reached the personal blog of Joseph Ryan Ries.</p>
@@ -49,7 +56,10 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 </div>
 <img src="me.png" class="profile-photo">
 </div>
+<hr>
+<div id="blog-container">
 
+</div>
 <footer>Copyright &copy; 1982-2023 Joseph Ryan Ries</footer>
 </body>
 </html>
