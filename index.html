@@ -6,13 +6,6 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<script>
-	fetch('./posts/post00001.html')
-    .then(response => response.text())
-    .then(content => {
-        document.getElementById('blog-container').innerHTML = content;
-    });
-</script>
 <div class="content-container">
 <div class="upper-text-content">
 <p>Hello. You have reached the personal blog of Joseph Ryan Ries.</p>
@@ -53,7 +46,6 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 </div>
 <img src="me.png" class="profile-photo">
 </div>
-<hr>
 <div style="text-align: center;">[ BLOG STARTS HERE ]</div>
 <hr>
 <div id="blog-container">
@@ -61,5 +53,30 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 </div>
 <hr>
 <footer>Copyright &copy; 1982-2023 Joseph Ryan Ries</footer>
+<script>
+	window.addEventListener('DOMContentLoaded', (event) => {
+    fetch('.posts/contents.txt')
+    .then(response => response.text())
+    .then(data => {
+        const files = data.trim().split('\n'); // Split file names by newline
+        let content = '';
+
+        const loadNextFile = (index) => {
+            if (index < files.length) {
+                fetch(`./posts/${files[index]}`)
+                .then(response => response.text())
+                .then(postContent => {
+                    content += postContent + "<hr>"; // Add a separator between posts
+                    loadNextFile(index + 1);
+                });
+            } else {
+                document.getElementById('blog-container').innerHTML = content;
+            }
+        };
+
+        loadNextFile(0);
+    });
+});
+</script>
 </body>
 </html>
