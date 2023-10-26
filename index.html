@@ -46,7 +46,6 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 </div>
 <img src="me.png" class="profile-photo">
 </div>
-<div style="text-align: center;">[ BLOG STARTS HERE ]</div>
 <hr>
 <div id="blog-container">
 
@@ -63,6 +62,8 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
             let blogPostDiv = document.createElement('div');
             blogPostDiv.innerHTML = postContent;
             document.getElementById('blog-container').appendChild(blogPostDiv);
+            let hrElement = document.createElement('hr');
+            document.getElementById('blog-container').appendChild(hrElement);
         } catch (err) {
             console.error(`Failed to fetch post: ${postFilename}`, err);
         }
