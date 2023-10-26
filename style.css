@@ -58,3 +58,11 @@ footer {
     text-align: left;
     padding: 10px 0; /* Optional: Some padding for aesthetics */
 }
+
+h1 {
+	margin-bottom: 5px;
+}
+
+h1 + p {
+	margin-top: 5px;
+}
