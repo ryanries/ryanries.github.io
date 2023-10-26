@@ -37,7 +37,7 @@ a:active {
 	padding-right: 1px;
 }
 
-.text-content {
+.upper-text-content {
 	padding-right: 370px;
 }
 
@@ -50,25 +50,6 @@ a:active {
     top: 10px;            /* Distance from the top */
     right: 10px;          /* Distance from the right */
     object-fit: cover;    /* Ensures that the image covers the entire element without being stretched */
-}
-
-.line-text {
-	display: flex;
-	align-items: center;
-	text-align: center;
-	white-space: nowrap;
-}
-
-.line-text hr {
-	flex: 1; /* This makes the <hr> take up all available space on either side of the text */
-	border: none; /* Removes default border */
-	border-top: 1px solid currentColor; /* Sets the line color */
-	margin: 0 10px; /* Adds some space between the line and the text */
-}
-
-.line-text span {
-	padding: 0 10px; /* Adds some padding to the text to separate it from the lines */
-	white-space: nowrap; /* Prevents the text from wrapping to the next line */
 }
 
 footer {
