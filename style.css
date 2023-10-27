@@ -10,8 +10,6 @@ html, body {
 	color: #DDDDDD;
 }
 
-
-
 .upper-text-content {
 	padding-right: 370px; /* So that the text does not run under the 350px profile photo. */
 }
@@ -44,6 +42,7 @@ h1 + p {
 }
 
 pre {
+	font-family: 'Px Plus IBM VGA 8x16';
 	background-color: #333; /* Dark background */
 	border: 2px solid #fff; /* White border */
 	border-radius: 10px; /* Rounded corners */
