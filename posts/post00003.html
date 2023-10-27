@@ -2,10 +2,10 @@
 <p>October 27th, 2023</p>
 <p>There was some discussion in <a href="https://discord.gg/AJmf96qM9g">my Discord server</a> last night about some peculiar results that folks were seeing when running my Test-RPC script. (Read the previous post for details if you haven't already.)</p>
 <p>Specifically, when testing the script against an Active Directory domain controller, not all ephemeral RPC ports were reachable via TCP, even though the client and the DC were on the same LAN:</p>
-<p><img src="images/2023/test-rpc01.png" alt="Test-RPC Unreachable Ports" title="Test-RPC Unreachable Ports"></p>
+<p><img src="posts/images/2023/test-rpc01.png" alt="Test-RPC Unreachable Ports" title="Test-RPC Unreachable Ports"></p>
 <p>The above screenshot shows a list of ports that the Test-RPC script found were unreachable on the remote server.</p>
 <p>It seemed like something in Windows Firewall on the DC was preventing this connectivity. When a domain controller is first DCPromo'd (or Install-ADDSDomainController'd,) the Windows Firewall rule "Active Directory Domain Controller (RPC)" is automatically created:</p>
-<p><img src="images/2023/firewallrule01.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
+<p><img src="posts/images/2023/firewallrule01.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
 <p>So why was this Windows Firewall rule seemingly still not allowing TCP traffic in to ports 49665-49667, 49671 or 49677?</p>
 <p>Shouldn't the range listed on the firewall rule "RPC Dynamic Ports" include these ports?</p>
 <p>Was it a bug?</p>
@@ -42,7 +42,7 @@ ncacn_ip_tcp:DC1[49677]
 </ul>
 <p>After seeing the specific services, it came to me pretty quickly what they all had in common: None of these services were hosted by the lsass process, and none of them were directly related to Active Directory.</p>
 <p>Let's take a another look at the Active Directory RPC Firewall Rule:</p>
-<p><img src="images/2023/firewallrule02.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
+<p><img src="posts/images/2023/firewallrule02.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
 <p>Specifically, on the "Programs and Services" tab, notice the firewall rule is scoped to the lsass process specifically. This explains why this firewall rule did not apply to the five services mentioned above. Those services aren't part of lsass.exe. Remote Shutdown service, Remote Event Log service, etc., are hosted by other processes on the system besides lsass, so this Windows Firewall rule won't apply to them.</p>
 <p>So the moral of the story is that depending on exactly how your firewall rules are set up, it might be expected for Test-RPC to show unreachable ports on a domain controller, and it might not be a problem. Meanwhile, I'm considering making this information more obvious and helpful as part of my next update to the Test-RPC script.</p>
 <p>Special thanks to Nara and Frank for bringing this to my attention and helping troubleshoot with me late at night!</p>
