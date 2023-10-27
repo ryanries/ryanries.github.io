@@ -78,3 +78,13 @@ h1 + p {
 	max-width: 80%; /* Optional: Set a max width for the box */
 	margin-left: 20px; 
 }
+
+pre {
+	background-color: #333; /* Dark background */
+	border: 2px solid #fff; /* White border */
+	border-radius: 10px; /* Rounded corners */
+	padding: 15px; /* Space inside the box */
+	color: #fff; /* White text color */
+	max-width: 80%; /* Optional: Set a max width for the box */
+	margin-left: 20px;
+}
