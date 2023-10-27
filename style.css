@@ -38,6 +38,10 @@ a:active {
 	padding-right: 1px;
 }
 
+a img {
+	background-color: transparent;
+}
+
 .upper-text-content {
 	padding-right: 370px; /* So that the text does not run under the 350px profile photo. */
 }
