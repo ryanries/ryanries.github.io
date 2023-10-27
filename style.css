@@ -10,37 +10,7 @@ html, body {
 	color: #DDDDDD;
 }
 
-a:link {
-	color: #282C34;
-	background-color: #DDDDDD;	
-	padding-left: 1px;
-	padding-right: 1px;
-}
 
-a:visited {
-	color: #282C34;
-	background-color: #DDDDDD;	
-	padding-left: 1px;
-	padding-right: 1px;
-}
-
-a:hover {
-	color: #DDDDDD;
-	background-color: #282C34;	
-	padding-left: 1px;
-	padding-right: 1px;
-}
-
-a:active {
-	color: #DDDDDD;
-	background-color: #282C34;	
-	padding-left: 1px;
-	padding-right: 1px;
-}
-
-a img {
-	background-color: transparent;
-}
 
 .upper-text-content {
 	padding-right: 370px; /* So that the text does not run under the 350px profile photo. */
