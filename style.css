@@ -6,6 +6,7 @@
 html, body {
 	background-color: #282C34;
 	font-family: 'Px Plus IBM VGA 8x16';
+	font-size: 16px;
 	color: #DDDDDD;
 }
 
@@ -60,6 +61,7 @@ footer {
 }
 
 h1 {
+	font-size: 32px;
 	margin-bottom: 5px;
 }
 
