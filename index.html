@@ -61,6 +61,8 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
             let blogPostDiv = document.createElement('div');
             blogPostDiv.innerHTML = postContent;
             document.getElementById('blog-container').appendChild(blogPostDiv);
+            let brElement = document.createElement('br');
+            document.getElementById('blog-container').appendChild(brElement);
             let hrElement = document.createElement('hr');
             document.getElementById('blog-container').appendChild(hrElement);
         } catch (err) {
