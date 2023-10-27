@@ -39,7 +39,7 @@ a:active {
 }
 
 .upper-text-content {
-	padding-right: 370px;
+	padding-right: 370px; /* So that the text does not run under the 350px profile photo. */
 }
 
 .profile-photo {
@@ -67,4 +67,14 @@ h1 {
 
 h1 + p {
 	margin-top: 5px;
+}
+
+.discussion-box {
+	background-color: #333; /* Dark background */
+	border: 2px solid #fff; /* White border */
+	border-radius: 10px; /* Rounded corners */
+	padding: 15px; /* Space inside the box */
+	color: #fff; /* White text color */
+	max-width: 80%; /* Optional: Set a max width for the box */
+	margin-left: 20px; 
 }
