@@ -1,0 +1,49 @@
+<h1>A Note Regarding Test-RPC</h1>
+<p>October 27th, 2023</p>
+<p>There was some discussion in <a href="https://discord.gg/AJmf96qM9g">my Discord server</a> last night about some peculiar results that folks were seeing when running my Test-RPC script. (Read the previous post for details if you haven't already.)</p>
+<p>Specifically, when testing the script against an Active Directory domain controller, not all ephemeral RPC ports were reachable via TCP, even though the client and the DC were on the same LAN:</p>
+<p><img src="images/2023/test-rpc01.png" alt="Test-RPC Unreachable Ports" title="Test-RPC Unreachable Ports"></p>
+<p>The above screenshot shows a list of ports that the Test-RPC script found were unreachable on the remote server.</p>
+<p>It seemed like something in Windows Firewall on the DC was preventing this connectivity. When a domain controller is first DCPromo'd (or Install-ADDSDomainController'd,) the Windows Firewall rule "Active Directory Domain Controller (RPC)" is automatically created:</p>
+<p><img src="images/2023/firewallrule01.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
+<p>So why was this Windows Firewall rule seemingly still not allowing TCP traffic in to ports 49665-49667, 49671 or 49677?</p>
+<p>Shouldn't the range listed on the firewall rule "RPC Dynamic Ports" include these ports?</p>
+<p>Was it a bug?</p>
+<p>Would Active Directory still function properly if clients were unable to access these ports?</p>
+<p>Furthermore, we found that if we manually added a new Windows Firewall rule that specifically included the ephemeral port range, then no more connectivity failures would occur:</p>
+<pre>
+> netsh advfirewall firewall add rule name="Active Directory Domain Controller - Explicitly Allow Ephemeral Port Range (TCP)" dir=in protocol=tcp localport=49152-65535 action=allow
+</pre>
+<p>To get to the bottom of this mystery, first I wanted to take a closer look at what services these ports were bound to. The RPC Endpoint Mapper on port 135 is like a phone book: A client queries the EPM for a list of available services, and the EPM responds with a list of what services have registered endpoints, so the client knows exactly which port to go to for the specific service it's looking for.</p>
+<p>The endpoint mapper says these are the services registered on the ports in question:</p>
+<pre>
+UUID: d95afe70-a6d5-4259-822e-2c84da1ddb0d 
+ncacn_ip_tcp:DC1[49665]
+
+UUID: f6beaff7-1e19-4fbb-9f8f-b89e2018337c Event log TCPIP
+ncacn_ip_tcp:DC1[49666]
+
+UUID: 86d35949-83c9-4044-b424-db363231fd0c 
+ncacn_ip_tcp:DC1[49667]
+
+UUID: 29770a8f-829b-4158-90a2-78cd488501f7 
+ncacn_ip_tcp:DC1[49671]
+
+UUID: 367abb81-9844-35f1-ad32-98f038001003 
+ncacn_ip_tcp:DC1[49677]
+</pre>
+<p>I was able to find these UUIDs on the web, and they correspond to:</p>
+<ul>
+<li>Remote Shutdown Service</li>
+<li>Remote Event Log Service</li>
+<li>Remote Task Scheduler Service</li>
+<li>Remote SessionEnv Service</li>
+<li>Remote svcctl (Service control) Service</li>
+</ul>
+<p>After seeing the specific services, it came to me pretty quickly what they all had in common: None of these services were hosted by the lsass process, and none of them were directly related to Active Directory.</p>
+<p>Let's take a another look at the Active Directory RPC Firewall Rule:</p>
+<p><img src="images/2023/firewallrule02.png" alt="Active Directory Domain Controller (RPC) Firewall Rule" title="Active Directory Domain Controller (RPC) Firewall Rule"></p>
+<p>Specifically, on the "Programs and Services" tab, notice the firewall rule is scoped to the lsass process specifically. This explains why this firewall rule did not apply to the five services mentioned above. Those services aren't part of lsass.exe. Remote Shutdown service, Remote Event Log service, etc., are hosted by other processes on the system besides lsass, so this Windows Firewall rule won't apply to them.</p>
+<p>So the moral of the story is that depending on exactly how your firewall rules are set up, it might be expected for Test-RPC to show unreachable ports on a domain controller, and it might not be a problem. Meanwhile, I'm considering making this information more obvious and helpful as part of my next update to the Test-RPC script.</p>
+<p>Special thanks to Nara and Frank for bringing this to my attention and helping troubleshoot with me late at night!</p>
+
