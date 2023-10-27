@@ -61,4 +61,5 @@ pre {
 	color: #fff; /* White text color */
 	max-width: 80%; /* Optional: Set a max width for the box */
 	margin-left: 20px;
+	white-space: pre-wrap;
 }
