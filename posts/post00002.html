@@ -35,10 +35,14 @@ well due for a version 1.1 of the Test-RPC script, aren't we!?</p>
     Tests RPC connectivity to a remote server over the port 135 endpoint mapper as well as the ephemeral ports advertised by the EPM.
 
     .DESCRIPTION
-    This script tests TCP network connectivity to not just the RPC Endpoint Mapper on port 135, but it also checks TCP network connectivity to each of the registered endpoints returned by querying the EPM.
-    I wrote this because many firewall teams have a difficult time with RPC, and they will end up allowing the Endpoint Mapper on port 135, but forget to also allow the ephemeral ports through the firewall.
-    This script uses localhost by default, but obviously you can specify a remote machine name or IP address to test a server across the network. The script works by P/Invoking functions exported from rpcrt4.dll
-    to get an enumeration of registered endpoints from the endpoint mapper, so it's not just a wrapper around portqry.exe and this script does not require portqry.exe.
+    This script tests TCP network connectivity to not just the RPC Endpoint Mapper on port 135, 
+    but it also checks TCP network connectivity to each of the registered endpoints returned by querying the EPM.
+    I wrote this because many firewall teams have a difficult time with RPC, and they will end up allowing the 
+    Endpoint Mapper on port 135, but forget to also allow the ephemeral ports through the firewall.
+    This script uses localhost by default, but obviously you can specify a remote machine name or IP address to
+    test a server across the network. The script works by P/Invoking functions exported from rpcrt4.dll
+    to get an enumeration of registered endpoints from the endpoint mapper, so it's not just a wrapper around 
+    portqry.exe and this script does not require portqry.exe.
     Author: Ryan Ries [MSFT]
     Origianl date: 15 Feb. 2014
     Latest update: 26 Oct. 2023 - the script can now tell you exactly which port(s) responded. Also fixed a bug where duplicate attempts to validate the same port were being made.
