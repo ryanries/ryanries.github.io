@@ -59,6 +59,13 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
             let postContent = await response.text();
             
             let blogPostDiv = document.createElement('div');
+
+            blogPostDiv.onclick = function() {
+                window.history.pushState({}, '', `?title=${postFilename}`);
+                document.getElementById('blog-container').innerHTML = ''; // Clear the blog container
+                fetchAndDisplayBlogPost(postFilename); // Load the clicked post
+            }
+
             blogPostDiv.innerHTML = postContent;
             document.getElementById('blog-container').appendChild(blogPostDiv);
             let brElement = document.createElement('br');
@@ -70,21 +77,33 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
         }
     }
 
+    // Get a URL parameter
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+    }
+
     // Function to fetch the list of blog posts and display them
     async function fetchAndDisplayAllBlogPosts() {
-        try {
-            // Fetching the contents.txt
-            let response = await fetch('posts/contents.txt');
-            let blogFileList = await response.text();
+        let postTitle = getURLParameter('title');
+        if (postTitle) {
+            // If there's a title in the URL, just fetch that post
+            await fetchAndDisplayBlogPost(postTitle);
+        } else {
+            // Otherwise, fetch and display all posts
+            try {
+                // Fetching the contents.txt
+                let response = await fetch('posts/contents.txt');
+                let blogFileList = await response.text();
             
-            // Splitting the text file content by new lines to get individual filenames
-            let blogFiles = blogFileList.trim().split(/\r?\n/);
+                // Splitting the text file content by new lines to get individual filenames
+                let blogFiles = blogFileList.trim().split(/\r?\n/);
 
-            for(let postFilename of blogFiles) {
-                await fetchAndDisplayBlogPost(postFilename); // Fetch and display each post
+                for(let postFilename of blogFiles) {
+                    await fetchAndDisplayBlogPost(postFilename); // Fetch and display each post
+                }
+            } catch (err) {
+                console.error('Failed to fetch contents.txt or display posts', err);
             }
-        } catch (err) {
-            console.error('Failed to fetch contents.txt or display posts', err);
         }
     }
 
