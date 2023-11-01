@@ -56,4 +56,5 @@ pre {
 a {
 	color: #DDDDDD;
 	text-shadow: 0px 0px 5px rgba(221, 221, 221, 0.7); /* This creates the glow effect */
+	text-decoration: none;
 }
