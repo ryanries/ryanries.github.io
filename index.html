@@ -60,11 +60,11 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
             
             let blogPostDiv = document.createElement('div');
 
-            blogPostDiv.onclick = function() {
-                window.history.pushState({}, '', `?title=${postFilename}`);
-                document.getElementById('blog-container').innerHTML = ''; // Clear the blog container
-                fetchAndDisplayBlogPost(postFilename); // Load the clicked post
-            }
+            //blogPostDiv.onclick = function() {
+            //    window.history.pushState({}, '', `?title=${postFilename}`);
+            //    document.getElementById('blog-container').innerHTML = ''; // Clear the blog container
+            //    fetchAndDisplayBlogPost(postFilename); // Load the clicked post
+            //}
 
             blogPostDiv.innerHTML = postContent;
             document.getElementById('blog-container').appendChild(blogPostDiv);
