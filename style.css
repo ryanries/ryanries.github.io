@@ -53,6 +53,12 @@ pre {
 	white-space: pre-wrap;
 }
 
+table {
+	background-color: #333; /* Dark background */
+	border: 2px solid #fff; /* White border */
+	color: #fff; /* White text color */
+}
+
 a {
 	color: #DDDDDD;
 	text-shadow: 0px 0px 6px rgba(221, 221, 221, 0.7); /* This creates the glow effect */
