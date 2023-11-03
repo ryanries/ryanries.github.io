@@ -1,6 +1,6 @@
 <h1><a href="./?title=possible_performance_pitfall_privileged_access_management.html">Possible Performance Pitfall: Privileged Access Management</a></h1>
 <p>November 3rd, 2023</p>
-<img src="posts/images/2023/addiagnosticsdatacollectorset01.png" alt="Active Directory Diagnostics Data Collector Set" title="Active Directory Diagnostics Data Collector Set" style="width:600px; height:320px; float: right;">
+<img src="posts/images/2023/addiagnosticsdatacollectorset01.png" alt="Active Directory Diagnostics Data Collector Set" title="Active Directory Diagnostics Data Collector Set" style="width:700px; height:400px; float: right;">
 <p>I briefly wrote a bit about the Privileged Access Management optional AD feature on <a href="https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/previewing-server-2016-tp4-temporary-group-memberships/ba-p/400372">the AskDS blog</a> many years ago. But since then, I have heard very few stories about the feature being used by customers, and I have worked very few support cases involving the feature. (Not zero, but not many.) I know there are customers using the feature, but I don't know how many. Since I work in support, I usually only get involved when things are broken. So if I never hear about it, that can either mean no one is using it, or it could also mean people are using it and it's just working great with no problems.</p>
 <p>This is a story about one of those rare times when it didn't work out so great.</p>
 <p>The PAM feature in Active Directory is enabled with the following PowerShell cmdlet:</p>
