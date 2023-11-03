@@ -1,0 +1,103 @@
+<h1><a href="./?title=possible_performance_pitfall_privileged_access_management.html">Possible Performance Pitfall: Privileged Access Management</a></h1>
+<p>November 3rd, 2023</p>
+<img src="posts/images/2023/addiagnosticsdatacollectorset01.png" alt="Active Directory Diagnostics Data Collector Set" title="Active Directory Diagnostics Data Collector Set" style="width:600px; height:320px; float: right;">
+<p>I briefly wrote a bit about the Privileged Access Management optional AD feature on <a href="https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/previewing-server-2016-tp4-temporary-group-memberships/ba-p/400372">the AskDS blog</a> many years ago. But since then, I have heard very few stories about the feature being used by customers, and I have worked very few support cases involving the feature. (Not zero, but not many.) I know there are customers using the feature, but I don't know how many. Since I work in support, I usually only get involved when things are broken. So if I never hear about it, that can either mean no one is using it, or it could also mean people are using it and it's just working great with no problems.</p>
+<p>This is a story about one of those rare times when it didn't work out so great.</p>
+<p>The PAM feature in Active Directory is enabled with the following PowerShell cmdlet:</p>
+<pre>PS> Enable-ADOptionalFeature 'Privileged Access Management Feature' -Scope ForestOrConfigurationSet -Target adatum.com</pre>
+<p>Once you've done this, you essentially unlock two new capabilities in your AD forest: Temporary time-based group memberships, and shadow principals.</p> 
+<p>Now on to the story. Some details are changed slightly so as not distract from the main point of the story.</p>
+<p>Customer calls in with a critsit. A critical, production-impacting event. The primary symptom: the lsass.exe process on all of their domain controllers is hovering around 100%, and the CPU starvation is leading to denial of service, LDAP connections being dropped, authentication failures, etc. across their entire production environment.</p>
+<p>The customer claims that the <i>*only*</i> thing they did prior to this happening was enabling the Privileged Access Management feature. They weren't even using the feature at all yet. They had no temporary group memberships or shadow principals created yet. Literally the only thing they had done was run the PowerShell command shown above to simply enable the feature.</p>
+<p>When the case was first escalated to me, the front-line engineers/first responders had already done their triage. They ran an AD Diagnostics Data Collector Set, pulled performance counters, network traces, Windows Performance Recorder (xperf,) took a memory dump of the lsass process, etc.. The engineers quickly determined that the CPU workload on these domain controllers was due to LDAP searches. Heavy LDAP workload. But the customer's IT department already knew this too. They knew how to read perf counters and AD Data Collector Sets. In most cases, this would have been enough evidence for our support engineers to tell the customer that they needed to reduce the amount of LDAP traffic coming from the clients. The clients were obviously DDoS-ing the domain controllers, and that's a very common scenario we see in support.</p>
+<p>I admit this was my first thought too. I was skeptical. I had never heard of such a severe impact just for merely enabling the PAM feature. It's a habit at this point for me to be skeptical of claims until I see corroborating data. The AD Diagnostics Data Collector Set showed that the bulk of the LDAP searches which were responsible for the vast majority of the CPU usage on these domain controllers were broken down as such:</p>
+<p>Excerpt from the AD Diagnostics Data Collector Set:</p>
+<b>Searches with the Most CPU</b>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Object Name</th>
+            <th>Scope</th>
+            <th>Object Name</th>
+            <th>Instance</th>
+            <th>Requests/sec</th>
+            <th>Response Time(ms)</th>
+            <th>CPU%</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>CN=UnixGroup,OU=Groups,OU=Unix,OU=Servers,DC=corp,DC=contoso,DC=com</td>
+            <td>base</td>
+            <td>CN=UnixGroup,OU=Groups,OU=Unix,OU=Servers,DC=corp,DC=contoso,DC=com</td>
+            <td>NTDS</td>
+            <td>115.7</td>
+            <td>249</td>
+            <td>80.2</td>
+        </tr>
+        <tr>
+            <td>CN=Shadow Principal Configuration,CN=Services,CN=Configuration,DC=corp,DC=contoso,DC=com</td>
+            <td>deep</td>
+            <td>DC=corp,DC=contoso,DC=com</td>
+            <td>NTDS</td>
+            <td>53.0</td>
+            <td>16</td>
+            <td>1.0</td>
+        </tr>
+        <tr>
+            <td>CN=Shadow Principal Configuration,CN=Services,CN=Configuration,DC=corp,DC=contoso,DC=com</td>
+            <td>one-level</td>
+            <td>CN=Shadow Principal Configuration,CN=Services,CN=Configuration,DC=corp,DC=contoso,DC=com</td>
+            <td>NTDS</td>
+            <td>183.5</td>
+            <td>2</td>
+            <td>0.7</td>
+        </tr>
+    </tbody>
+</table>
+<p>There's a distraction in this data that we need to clear up first. On the first line of the table above, we see an LDAP query for a "UnixGroup" security group which we confirmed was a large 100,000-member security group that the customer was using to allow users to log onto their Unix systems with Active Directory credentials. However the next two lines proved at first to be a significant distraction for both the customer and the Microsoft engineers: the "CN=Shadow Principal" LDAP queries. In the AD Data Collector Set report, the "Searches with the Most CPU" table is not the first table that appears in the HTML report. The "Directory Search by Object" table will appear first in the report, and it will show the "CN=Shadow Principal" queries on the top of that table, because the Shadow Principal container is being queried for at over twice the rate that the "UnixGroup" object is being queried for.</p>
+<p>The customer had historical data that showed these queries for the Shadow Principal container weren't occurring prior to enabling the PAM feature. And now they are the most frequent LDAP query occurring on the DC. So these Shadow Principal queries must be the problem, right?</p>
+<p>Actually, no. That is why I asked everyone involved in the case to instead stay focused on the "Searches with the Most CPU" table instead. Once you enable the PAM feature, these queries for the Shadow Principal container become a fact of life. You will just have to live with these queries now, thousands of them, and there's nothing you can do about it. Instead, take into account the relative CPU usage of these queries. The combined CPU usage of these queries for the Shadow Principal container is 1.7%, as opposed to the whopping 80% CPU for the UnixGroup query. Furthermore, the queries for the Shadow Principal Container appear in the AD Data Collector Set report as originating not from any remote IP address, but from the local SAM itself. These queries represent internal chatter that Active Directory now performs as part of shadow principal expansion. These queries for the Shadow Principal Configuration container occur within the SampGetGroupsForToken function, which calculates the group membership for an account, and merges together things such as SID history, as well as Shadow Principals if enabled, to form a complete view of a principal's group membership. This function calls SampExpandShadowPrincipal, which is the function that makes the query. It's a local query that never leaves the DC. Even if you are not using any Shadow Principals, the domain controller still has to check.</p>
+<p>This &lt;2% CPU overhead is what I expected from enabling the PAM feature. Everything beyond that, I <i>wanted</i> to blame on the customer's queries for the UnixGroup security group.</p>
+<p>But I couldn't really do that.</p>
+<p>It seemed straightforward at first. There were constant queries to enumerate the group membership of this UnixGroup security group, coming from thousands of Unix servers simultaneously. This was undeniably bad behavior. This security group had almost 100,000 members in it, and enumerating the group membership of this group was a massive paged LDAP query and it was being made hundreds of times a second across thousands of servers.</p>
+<p>But the customer was adamant: the traffic pattern had not changed, the workload volume had not changed. No other configuration had changed on either the DCs or the Unix servers. The only thing that had changed was that they enabled PAM that morning at midnight, and within an hour, all their domain controllers were CPU-bound and borderline non-responsive.</p>
+<p>The customer had the data to back this assertion up too: Their monitoring system stored months worth of historical performance counter data and AD Diagnostics Data Collector Set data from their DCs, and showed that a week ago, their domain controllers were handling <i>more</i> LDAP traffic than they were currently, the exact same UnixGroup queries, at less than <i>half</i> the CPU usage!</p>
+<p>At this point it was clear that there was than meets the eye to this situation. True, there was bad behavior going on here that needed to be addressed. But we couldn't just ignore the fact that prior to enabling the PAM feature, the customer's DCs were able to handle the bad behavior. And now they're not.</p>
+<p>At this point I needed to retire to my lab to do a little testing. To reproduce the issue myself, I created a large group of 16,000 members. Smaller than the customer's security group but still larger than average. Then I ran the following PowerShell script to time how long it took on average to enumerate the group membership of this group:</p>
+<pre>
+$cRuns = 32
+$avg = 0; 
+1..$cRuns | % { 
+  $avg += (Measure-Command { 
+    (Get-ADObject -SearchBase "CN=GiganticGroup,OU=GiganticDIT,DC=lab,DC=contoso,DC=com" -LDAPFilter "objectClass=group" -Properties member) 
+  }).TotalMilliseconds 
+};
+$avg / $cRuns
+</pre>
+<p>The result was 232ms.</p>
+<p>Next, I enabled the PAM feature on my DCs in my lab. Then I rebooted the DC, and let it sit for 10 minutes. Then I ran the exact same script again:</p>
+<p>473ms. An &gt;100% performance degredation in the group member enumeration of large security groups just from the simple act of enabling the PAM feature! I used virtual machine snapshots to revert the PAM change and re-ran the test many times and always got consistent results.</p>
+<p>In my testing, this issue appears isolated specifically to the group member enumeration of large groups. All other operations, such as enumeration of smaller (e.g. &lt;1000-member) security groups did not appear to be affected at all (or only imperceptably so) by the enablement of the PAM feature.</p>
+<p>I suspect that although my 16,000-member security group incurred a ~100% performance penalty, it was probably significantly more than 100% for the customer's 100,000-member security group. My hunch is the performance impact scales with the size of the security group. ("Big Hell-No of N")</p>
+<p>If the customer had only been issuing these LDAP queries for the Unix group a few times a second, they might have never noticed. But they were issuing this query hundreds of times per second, which caused their DCs to drive straight off the cliff.</p>
+<p>There were other factors making matters worse for the customer. For example, the customer had configured their domain controllers to use 16 ATQ threads per processor instead of the default 4, which was undoubtedly exacerbating the issue as lock contention shot through the roof because of the excess of threads contending for the same locks. But I won't go into any more detail on that because I don't want to lose focus on the main issue, which is PAM.</p>
+<p>Next, in my lab, I took Windows Performance Analyzer traces while the group enumeration queries were running. One trace before PAM was enabled, and another trace after PAM was enabled. I wanted to compare them side-by-side and see the delta:</p>
+<p>Before PAM:</p>
+<img src="posts/images/2023/xperf01_before.png" alt="Windows Performance Analyzer: Before PAM" title="Windows Performance Analyzer: Before PAM">
+<p>After PAM:</p>
+<img src="posts/images/2023/xperf01_after.png" alt="Windows Performance Analyzer: After PAM" title="Windows Performance Analyzer: After PAM">
+<p>The most important difference between these two traces, is the dbGetLinkTableData function which wasn't present in the "before" trace, and is taking a significant chunk of time in the "after" trace.</p>
+<p>We're spending a very large amount of time pulling extra ESE pages from the link table in the database.</p>
+<p>It's because after PAM, we store expiry there for expiring links to support temporary group memberships. And again, even if you don't use temporary group memberships, the DC still has to check.</p>
+<p>For every group member.</p>
+<p>And it's not indexed.</p>
+<p>Currently, there is nothing that can be done to improve the performance of this code path. This code path could be sped up by creating multiple new indicies over the link table, but that would require a database layout change, which would require a new Forest Functional Level. And at this point in 2023, the new Forest Functional Level for Server 2025 is probably already packed with all the new features it's going to have, so if this situation were to ever be improved, it would have to wait for whatever Forest Functional Level comes <i>after</i> Server 2025.</p>
+<p>Furthermore, creating multiple new indicies over the link table will significantly increase the size of the database. I heard that there was some discussion amongst the Product Group when PAM was first being created that a decision was made to forego the creation of these link table indicies because they didn't want to punish every customer with a larger DIT size, while only benefitting the subset of customers with extremely large groups.</p>
+<p>I propsed an idea that maybe we add a switch to the "Enable-ADOptionalFeature" cmdlet that lets the administrator decide what's best for them: optimize for smaller database size, or faster queries on very large security groups. But I suspect it'll be years to never before we ever see any changes in this particular code.</p>
+<p>Now back to the customer's problem. Essentially, they got lucky. They were lucky because a) they were able to work with the vendor of the Unix application to reduce the number of these group enumeration LDAP queries, and b) after some review they found that the vast majority of the 100,000 group members that were in the UnixGroup security group were unnecessary and could be culled. After taking those two actions, CPU usage on their domain controllers was back to normal.</p>
+<p>But what if each one of those 100,000 group members had been necessary? The customer could have easily not have been so lucky.</p>
+<p>Despite the customer's bad behavior of issuing a tremendous volume of group enumeration queries, still, there was no warning that enabling the PAM feature could have such a dramatic affect on CPU performance. I searched the web and found that this is <a href="https://github.com/MicrosoftDocs/MIMDocs/blob/main/MIMDocs/pam/deploy-pam-with-windows-server-2016.md">the only Microsoft documentation I'm aware of that actually instructs people to enable PAM using the Enable-ADOptionalFeature cmdlet.</a></p> I added a cautionary note to that article:
+<img src="posts/images/2023/pamfeaturewarning01.png" alt="Warning about PAM" title="Warning about PAM">
+<p>Still waiting on that PR to be merged, I guess.</p>
+<p>And a final note: Enabling PAM in your AD Forest is an irreversible action. The only way to reverse this action is a forest restore. So as with any irreversible change you're about to make to your forest, even if you don't think it's that big of a deal, have a backup plan in place!</p>

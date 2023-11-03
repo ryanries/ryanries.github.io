@@ -1,3 +1,4 @@
+possible_performance_pitfall_privileged_access_management.html
 a_note_regarding_test_rpc.html
 test_rpc_1.1.html
 here_we_go_again.html
