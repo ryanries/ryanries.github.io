@@ -7,6 +7,7 @@
 </head>
 <body>
 <div class="content-container">
+<img src="me.png" class="profile-photo">
 <div class="upper-text-content">
 <p>Hello. You have reached the personal blog of Joseph Ryan Ries.</p>
 <p>You can also find me on the following platforms:</p>
@@ -17,8 +18,8 @@
 <a href="https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/bg-p/AskDS"><img src="askdsblog.png" alt="Ask the Directory Services Team - Microsoft" title="Ask the Directory Services Team - Microsoft"></a>
 <a href="https://store.steampowered.com/app/2026170/LRacers/"><img src="steam.png" alt="Steam" title="Steam"></a>
 <p>I'm a Senior Escalation Engineer on the Windows Debug Team at Microsoft. I debug the Windows operating system. If you're reading this,
-you might want to talk to me about Windows or Active Directory, in which case I suggest you check out <a href="https://discord.gg/AJmf96qM9g">my Discord server</a>.
-I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up until recently, but I've retired from it as part of my initiative to consume less social media.</p>
+you might want to talk to me about Windows or Active Directory, in which case I suggest you check out <a href="https://discord.gg/AJmf96qM9g">my Discord server</a>. Also, if you have comments on any of my blog posts: Discord.</p>
+<p>I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up until recently, but I've retired from it as part of my initiative to consume less social media.(Plus the current new leader made the decision to leave much easier.)</p>
 <p>Here's a list of things I've done lately you might be interested in:</p>
 <p>Ask the Directory Services Team blog @ Microsoft:</p>
 <ul>
@@ -43,9 +44,8 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
 <li>More to come...</li>
 </ul>
 <br>
-<p>Now onto the blog!</p>
+<p>Now on to the blog!</p>
 </div>
-<img src="me.png" class="profile-photo">
 </div>
 <hr>
 <div id="blog-container">
@@ -61,13 +61,13 @@ I was active on <a href="https://twitter.com/JosephRyanRies">Twitter</a> up unti
             
             let blogPostDiv = document.createElement('div');
 
-            //blogPostDiv.onclick = function() {
-            //    window.history.pushState({}, '', `?title=${postFilename}`);
-            //    document.getElementById('blog-container').innerHTML = ''; // Clear the blog container
-            //    fetchAndDisplayBlogPost(postFilename); // Load the clicked post
-            //}
-
             blogPostDiv.innerHTML = postContent;
+			
+			// Get the blog post title from the blog post content
+			let blogPostTitle = blogPostDiv.querySelector('h1').innerText;
+			// Update the document title with the blog post title
+			document.title = blogPostTitle + " - The Blog of Ryan Ries";
+		
             document.getElementById('blog-container').appendChild(blogPostDiv);
             let brElement = document.createElement('br');
             document.getElementById('blog-container').appendChild(brElement);
