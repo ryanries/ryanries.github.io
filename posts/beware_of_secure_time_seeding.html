@@ -11,9 +11,9 @@
 <p>The aforementioned Microsoft documentation does state this, but in a very soft-spoken way:</p>
 <quote>
 "In deployments with a reliable time source(s) and well monitored machines that include monitoring for time offsets, 
-you may choose to not use the Secure Time Seeding feature and rely on your existing infrastructure instead."
-
-"If your domain has portable slim laptops/tablets and other devices, you may want to exclude such machines from this policy
+you may choose to not use the Secure Time Seeding feature and rely on your existing infrastructure instead.
+...
+If your domain has portable slim laptops/tablets and other devices, you may want to exclude such machines from this policy
 change. These devices will eventually face battery drain and need the Secure Time Seeding feature to bootstrap their time."
 </quote>
 <p>The documentation is telling you that if you have a secure time source (i.e. if your NTP servers work,) you do not need and should not use STS. Though the documentation is only implying it.
