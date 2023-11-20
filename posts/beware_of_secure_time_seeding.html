@@ -10,18 +10,23 @@
 <p>The second mistake was allowing STS to take precedence over normal NTP servers. Additionally, STS does not adhere to max phase correction (for good reason) so it does not hesitate to set your clocks months or years in the future or past.</p>
 <p>The aforementioned Microsoft documentation does state this, but in a very soft-spoken way:</p>
 <quote>
-"In deployments with a reliable time source(s) and well monitored machines that include monitoring for time offsets, you may choose to not use the Secure Time Seeding feature and rely on your existing infrastructure instead."
-...
-"If your domain has portable slim laptops/tablets and other devices, you may want to exclude such machines from this policy change. These devices will eventually face battery drain and need the Secure Time Seeding feature to bootstrap their time."
+"In deployments with a reliable time source(s) and well monitored machines that include monitoring for time offsets, 
+you may choose to not use the Secure Time Seeding feature and rely on your existing infrastructure instead."
+
+"If your domain has portable slim laptops/tablets and other devices, you may want to exclude such machines from this policy
+change. These devices will eventually face battery drain and need the Secure Time Seeding feature to bootstrap their time."
 </quote>
-<p>The documentation is telling you that if you have a secure time source (i.e. if your NTP servers work,) you do not need and should not use STS.</p>
+<p>The documentation is telling you that if you have a secure time source (i.e. if your NTP servers work,) you do not need and should not use STS. Though the documentation is only implying it.
+It's not brow-beating you telling you explicitly to turn it off. So that's what I'm doing.</p>
 <p>The problem is, it's still enabled by default, even for servers. Even on domain controllers. And it definitely should not be.</p>
 <p>STS works by reading the timestamp field from incoming TLS records. The problem is, STS naively assumes that the timestamp field in these TLS records contains a valid timestamp. But in reality,
-	and per RFC, this timestamp field is not required to contain a valid timestamp, and indeed, some implementations of TLS (think OpenSSL, et al,) will put random data or some other data that isn't a valid
-	timestamp in that timestamp field in the TLS packet. STS will interpret that as a date that's months or years off and set the clock to a very incorrect time.</p>
+and per RFC, this timestamp field is not required to contain a valid timestamp, and indeed, some implementations of TLS (think OpenSSL, et al,) will put random data or some other data that isn't a valid
+timestamp in that timestamp field in the TLS packet. STS will interpret that as a date that's months or years off and set the clock to a very incorrect time.</p>
 <p>I've seen several cases of customers having terrible production impact because STS skewed the time on their machines incorrectly. Often even AD domain controllers.</p>
 <p>Lately it seems it's been getting worse. The question for several customers is, why is STS wrecking us now when it wasn't doing it before?</p>
 <p>Correlating the w32time debug log with CAPI2 logs (SSL certificate validations) may give you a hint. But the truth is, there isn't enough instrumentation in the w32time service to know for sure.</p>
-<p></p>
-<p></p>
+<p>The explanation that would make the most sense is that there has been an introduction of devices on your network recently that puts random data into the timestamp field
+of TLS packets, such as non-Windows devices and/or non-Schannel-based TLS implementations.</p>
+<p>This is a developing situation. There will be more updates to the official Microsoft docs. But this blog post is not official Microsoft communication. This is just my 
+personal blog.</p>
 <p></p>
