@@ -3,4 +3,20 @@
 <p>Secure Time Seeding is a feature of the Windows Time service (w32time) that was introduced with Server 2016.</p>
 <p>The feature is documented in a couple of places, <a href="https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-server-2016-improvements">but primarily here.</a></p>
 <p>There was also an <a href="https://arstechnica.com/security/2023/08/windows-feature-that-resets-system-clocks-based-on-random-data-is-wreaking-havoc/">Ars Technica article</a> published recently in which one of my Twitter tweets was quoted:</p>
-<img src="images/2023/ststweet1.png" title="Tweet on STS" alt="Tweet on STS">
+<img src="posts/images/2023/ststweet1.png" title="Tweet on STS" alt="Tweet on STS">
+<p><b>Please, please, I'm begging you, turn off Secure Time Seeding on your Windows Servers.</b></p>
+<p>STS was created to correct <i>massive</i> time skews on devices such as laptops and tablets that drain their batteries and wake up with their clocks grossly incorrect.</p>
+<p>In my opinion, it was a mistake to leave STS enabled by default on Server SKUs.</p>
+<p>The second mistake was allowing STS to take precedence over normal NTP servers. Additionally, STS does not adhere to max phase correction (for good reason) so it does not hesitate to set your clocks months or years in the future or past.</p>
+<p>The aforementioned Microsoft documentation does state this, but in a very soft-spoken way:</p>
+<quote>
+"In deployments with a reliable time source(s) and well monitored machines that include monitoring for time offsets, you may choose to not use the Secure Time Seeding feature and rely on your existing infrastructure instead."
+...
+"If your domain has portable slim laptops/tablets and other devices, you may want to exclude such machines from this policy change. These devices will eventually face battery drain and need the Secure Time Seeding feature to bootstrap their time."
+</quote>
+<p>The documentation is telling you that if you have a secure time source (i.e. if your NTP servers work,) you do not need and should not use STS.</p>
+<p>The problem is, it's still enabled by default, even for servers. Even on domain controllers. And it definitely should not be.</p>
+<p>STS works by reading the timestamp field from incoming TLS records. The problem is, STS naively assumes that the timestamp field in these TLS records contains a valid timestamp. But in reality,
+	and per RFC, this timestamp field is not required to contain a valid timestamp, and indeed, some implementations of TLS (think OpenSSL, et al,) will put random data or some other data that isn't a valid
+	timestamp in that timestamp field in the TLS packet. STS will interpret that as a date that's months or years off and set the clock to a very incorrect time.</p>
+<p>.</p>
