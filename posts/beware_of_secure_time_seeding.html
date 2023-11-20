@@ -19,4 +19,9 @@
 <p>STS works by reading the timestamp field from incoming TLS records. The problem is, STS naively assumes that the timestamp field in these TLS records contains a valid timestamp. But in reality,
 	and per RFC, this timestamp field is not required to contain a valid timestamp, and indeed, some implementations of TLS (think OpenSSL, et al,) will put random data or some other data that isn't a valid
 	timestamp in that timestamp field in the TLS packet. STS will interpret that as a date that's months or years off and set the clock to a very incorrect time.</p>
-<p>.</p>
+<p>I've seen several cases of customers having terrible production impact because STS skewed the time on their machines incorrectly. Often even AD domain controllers.</p>
+<p>Lately it seems it's been getting worse. The question for several customers is, why is STS wrecking us now when it wasn't doing it before?</p>
+<p>Correlating the w32time debug log with CAPI2 logs (SSL certificate validations) may give you a hint. But the truth is, there isn't enough instrumentation in the w32time service to know for sure.</p>
+<p></p>
+<p></p>
+<p></p>
