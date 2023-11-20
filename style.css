@@ -41,7 +41,7 @@ h1 + p {
 	margin-top: 5px;
 }
 
-pre, quote {
+pre, blockquote {
 	font-family: 'Px Plus IBM VGA 8x16';
 	background-color: #333; /* Dark background */
 	border: 2px solid #fff; /* White border */
