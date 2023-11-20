@@ -27,6 +27,7 @@ timestamp in that timestamp field in the TLS packet. STS will interpret that as 
 <p>Correlating the w32time debug log with CAPI2 logs (SSL certificate validations) may give you a hint. But the truth is, there usually isn't enough instrumentation in the w32time service to know for sure.</p>
 <p>The explanation that would make the most sense is that there has been an introduction of devices on your network recently that puts random data into the timestamp field
 of TLS packets, such as non-Windows devices and/or non Schannel-based TLS implementations.</p>
+<p>If you have reliable NTP servers, then turn it off. At least on your servers. You don't need it. Instructions on how to do that are in the aforementioned Microsoft KB article.</p>
 <p>This is a developing situation. There will be more updates to the official Microsoft docs. There may be improvements to the logging and/or instrumentation to help customers and Microsoft Support troubleshoot issues. But this blog post is not official Microsoft communication. This is just my 
 personal blog.</p>
 <p>I'll be saying that a lot on this blog.</p>
