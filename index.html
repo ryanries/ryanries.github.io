@@ -69,6 +69,11 @@
 			document.title = blogPostTitle + " - The Blog of Ryan Ries";
 		
             document.getElementById('blog-container').appendChild(blogPostDiv);
+			// Create the new paragraph element for links
+			let linksParagraph = document.createElement('p');
+			linksParagraph.innerHTML = '[<a href="/">HOME</a>] [<a href="/contents.html">CONTENTS</a>]';
+			// Append the links paragraph to the blog post div
+			blogPostDiv.appendChild(linksParagraph);
             let brElement = document.createElement('br');
             document.getElementById('blog-container').appendChild(brElement);
             let hrElement = document.createElement('hr');
