@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>List of Blog Posts</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="content-container">
+		<h1>List of Blog Posts</h1>
+		<div id="posts-list">
+			<!-- Posts will be listed here -->
+		</div>
+	</div>
+	
+	    <script>
+        // Function to fetch the list of blog posts and display them as links
+        async function fetchAndListAllBlogPosts() {
+            try {
+                // Fetching the contents.txt
+                let response = await fetch('posts/contents.txt');
+                let blogFileList = await response.text();
+            
+                // Splitting the text file content by new lines to get individual filenames
+                let blogFiles = blogFileList.trim().split(/\r?\n/);
+
+                let postsListDiv = document.getElementById('posts-list');
+
+                for(let postFilename of blogFiles) {
+                    // Create a link element for each post
+                    let postLink = document.createElement('a');
+                    postLink.href = `posts/${postFilename}`;
+                    postLink.innerText = postFilename.replace('.html', ''); // Remove .html extension for display
+                    postLink.className = 'blog-post-link';
+
+                    // Append the link to the posts list
+                    postsListDiv.appendChild(postLink);
+                    postsListDiv.appendChild(document.createElement('br')); // Add a line break for readability
+                }
+            } catch (err) {
+                console.error('Failed to fetch contents.txt or list posts', err);
+            }
+        }
+
+        // Execute when the document is loaded
+        window.onload = fetchAndListAllBlogPosts;
+    </script>
+</body>
+</html>
