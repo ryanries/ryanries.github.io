@@ -46,4 +46,4 @@ ncacn_ip_tcp:DC1[49677]
 <p>Specifically, on the "Programs and Services" tab, notice the firewall rule is scoped to the lsass process specifically. This explains why this firewall rule did not apply to the five services mentioned above. Those services aren't part of lsass.exe. Remote Shutdown service, Remote Event Log service, etc., are hosted by other processes on the system besides lsass, so this Windows Firewall rule won't apply to them.</p>
 <p>So the moral of the story is that depending on exactly how your firewall rules are set up, it might be expected for Test-RPC to show unreachable ports on a domain controller, and it might not be a problem. Meanwhile, I'm considering making this information more obvious and helpful as part of my next update to the Test-RPC script.</p>
 <p>Special thanks to Nara and Frank for bringing this to my attention and helping troubleshoot with me late at night!</p>
-<p>[<a href="/">HOME</a>]</p>
+<p>[<a href="/">HOME</a>] [<a href="/contents.html">CONTENTS</a>]</p>
