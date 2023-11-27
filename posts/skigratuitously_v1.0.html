@@ -1,0 +1,33 @@
+<h1><a href="./?title=skigratuitously_v1.0.html">SkiGratuitously v1.0</a></h1>
+<p>November 27th, 2023</p>
+<p>Everyone who is of a certain age remembers the classic Windows game <a href="https://ski.ihoc.net/">SkiFree.</a></p>
+<p>Whether your family owned a PC with Windows 3.1 on it when you were a kid, or whether your school in the early '90s had Windows PCs, you remember this game.</p>
+<p>I have created a SkiFree clone, and named it SkiGratuitously.</p>
+<p>I have no affiliation with Chris Pirih, the author of the original SkiFree, but I hope he sees this as an ode to a classic we all hold dear in our hearts.</p>
+<p>The reasons why I created this game are as follows:</p>
+<ul>
+<li>An old friend from high school asked me to do it, and it seemed feasible that I could do it, so I set out to challenge myself. He said he wanted a "more intense" SkiFree experience.</li>
+<li>Nostalgia.</li>
+<li>I'm always looking for an excuse to practice my coding skills.</li>
+<li>Perhaps I could even make some slight improvements on the original and make the game even more fun.</li>
+</ul>
+<p>I first set out to create an exact replica of the original SkiFree as best I could. For this I downloaded the original game from <a href="https://ski.ihoc.net/">Chris Pirih's page</a>, and I did a lot of playing so I could observe and copy every little quirk and game mechanic. I can now confidently say I know more about the mechanics of SkiFree than almost anybody except Chris himself.</p>
+<p>Most of the graphics are direct copies from the original game, however, the game engine and all of the game logic in SkiGratuitously is 100% my own, built from complete scratch in the C programming language. You will notice some differences between the way SkiGratuitously plays versus how the old SkiFree played.</p>
+<p><img src="posts/images/2023/skigratuitously1.png" alt="SkiGratuitously Screenshot 1" title="SkiGratuitously Screenshot 1"></p>
+<p><img src="posts/images/2023/skigratuitously2.png" alt="SkiGratuitously Screenshot 2" title="SkiGratuitously Screenshot 2"></p>
+<p><a href="/downloads/SkiGratuitously_v1.0.zip">Here is the download.</a></p>
+<p>The download is a zip archive that consists of two files: The game executable and a file named assets.dat. Both files must stay together in the same directory. Just double-click the *.exe file to play. Scan it with your favorite virus scanner first if you want. I promise there's no funny business going on.</p>
+<p>If you have any comments or questions about the game, you can always find me on <a href="https://discord.gg/AJmf96qM9g">Discord.</a></p>
+<p>I will now end with some random facts about the game:</p>
+<ul>
+<li>I removed mouse control, because trying to steer with the mouse sucks. It sucks. Use the keyboard please. You do not need to hold down the key to keep going. Just light taps on the keys.</li>
+<li>The game's resolution is 768x432. I know this is an unusual resolution, but I chose the resolution because it is a 16:9 aspect ratio, yet it still has that retro, low-res nostalgic feel to it. When the original SkiFree debuted in 1991, everyone had a 640x480 or 800x600 CRT monitor. (Both 4:3 aspect ratios.) But 95% of people today have a 1080p or 1440p monitor, so when you maximize the old SkiFree, the graphics are relatively tiny. My eyesight isn't as good as it was 30 years ago, so I chose instead to set the drawing canvas to a static size and when the window is maximized, the graphics grow in size to fit the monitor. On the downside, I did not make any considerations for unusual monitor sizes/orientations, so you will likely have a bad time if you try to play the game on something weird like a monitor turned on its side in a portrait orientation, or something like a 42" ultrawide that isn't 16:9. I might add black bars or something else clever to cover these scenarios, but like I said, 95% of folks in 2023 have at least one plain old 16:9 monitor. Play the game on that monitor. The game doesn't compensate for the area taken up by the taskbar when maximized either, so it isn't pixel-perfect even on a 16:9 monitor. I could add a fullscreen mode that would take up the entire monitor; at least then it'd be pixel-perfect.</li>
+<li>The game executable is 445KB, and the compressed archive of assets, the dat file, is 34KB. However, 255KB of that is just the application icon stored as a 256x256 PNG! So the executable is really more like 190KB excluding the icon. Will comfortably fit on a 3.5" floppy disk either way.</li>
+<li>The game uses about 3.9 megabytes of RAM while it's running. I admit this is extravagant in 1991 terms, but most of that is overhead from the 2023 version of the Microsoft C runtime and can't be avoided without a great expense of effort on my part which wasn't worth it to me.</li>
+<li>The game runs at over 3000 frames per second on my 3.9GHz CPU, but I throttled the FPS to 100 to avoid burning excessive CPU.</li>
+<li>Some objects are randomly-placed every time you launch the game, while other objects are static and appear in the same place every time. Rocks, stumps, trees, ramps, dogs, monsters and moguls are randomly-placed. Slalom flags, ski lifts, and signage is all static.</li>
+<li>There are 9 abonimable snow men that are randomly-placed at the start of each run. They don't move until you get within their line of sight. Once they start moving, they gradually get faster until they catch you and eat you. Outrun the monsters for as long as you can.</li>
+<li>Small obstacles can be jumped over if your altitude is high enough. Tall trees can be jumped over only if you are very high up. The big ski lift poles cannot be jumped over. You can ski underneath the ski lift chairs but if you are airborne, you can crash into them.</li>
+<li>I implemented <i>almost</i> everything from the original game, except for the snowboarders, the bad skiers, and the stumps that turn into mushrooms if you jump over them. I just got tired towards the end. I might put them in later once I've gained my motivation back.</li>
+<li>Please enjoy the game!</li>
+</ul>
