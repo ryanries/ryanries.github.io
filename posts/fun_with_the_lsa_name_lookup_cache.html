@@ -1,0 +1,34 @@
+<h1><a href="./?title=fun_with_the_lsa_name_lookup_cache.html">Fun with the LSA Name Lookup Cache</a></h1>
+<p>December 21st, 2023</p>
+<p>A recent customer case started a discussion among my coworkers and I on the topic of client-side LSA name lookup cache behavior.</p>
+<p>"Client-side" is redundant here, since this behavior doesn't exist on domain controllers. Just domain members.</p>
+<p>This most recent case was specifically concerning the <i>performance</i> of the LSA name lookup cache, and about how there is no negative cache. That is, when the client tries to look up a name to convert that name into a SID, and the domain controller is unable to convert that name, the client does not cache that negative result, which means if the client tries to convert an unresolvable name that fails to be converted a thousand times, that query is going to keep reaching out to a domain controller every time.</p>
+<p>Only positive responses are cached by the client.</p>
+<p>This discussion reminded me of an even older case I worked in 2019, concerning the <i>accuracy/reliability</i> of the LSA name lookup cache.</p>
+<p>A concerned customer called in and proposed the following scenario:</p>
+<ul>
+<li>We have two forests with a trust between them, BigCo.com and Acquisition.com.</li>
+<li>Users from Acquisiton.com are allowed to log onto a set of servers in BigCo.com, but are not administrators of those servers.</li>
+<li>There is a scheduled task on these servers in BigCo.com that is configured so that only members of the 'Managers' security group can execute the scheduled task.</li>
+<li>The user, who is from the Acquisition domain but is logged onto a BigCo server, and who is a member of the 'acquisition\managers' group but not a member of the 'bigco\managers' group, now performs an action that triggers the Windows API function <a href="https://learn.microsoft.com/en-us/windows/win32/api/ntsecapi/nf-ntsecapi-lsalookupnames2">LsaLookupNames2</a>. This function performs name lookups, consulting a domain controller if necessary, and it will populate the local LSA lookup cache with the response. For example, this PowerShell snippet can be used to convert a name to a SID, which relies on the LsaLookupNames2 API:
+<pre>
+(New-Object System.Security.Principal.NTAccount('acquisition\managers')).Translate([System.Security.Principal.SecurityIdentifier]).Value
+</pre>
+Which returns the SID:
+<pre>
+S-1-5-21-2824238498-1740521074-3173497499-3855
+</pre>
+</li>
+<li>If there was no entry in the LSA name lookup cache for the 'Managers' group previously, now there is. But note that it is not the 'Managers' group from the machine's primary domain of BigCo.com. It is the SID for acquisition\managers.</li>
+<li>Now the user attempts to execute that scheduled task that only members of bigco\managers should have been able to execute. The machine performs a name lookup for the isolated name 'Managers'. It is satisfied by the local LSA cache, no need to consult a DC:</li>
+<pre>
+S-1-5-21-2824238498-1740521074-3173497499-3855
+<li>The user is deemed to be a member of the 'Managers' group and is allowed to execute the scheduled task.</li>
+</pre>
+</ul>
+<p>This "cache pollution" means that the LSA will respond differently when asked to look up an isolated name (i.e., a name with no domain qualifier,) depending on which qualified name was looked up first!</p>
+<p>In other words, if you search for 'BigCo\Managers' first, that response will be cached locally, and then subsequent queries for 'Managers' will return the SID for 'BigCo\Managers' as expected. It's expected because BigCo is the primary domain of the machine making the query. But if you search for 'Acquisition\Managers' first, <i>that</i> response gets put into the cache and subsequent queries for 'Managers' will return the SID for 'Acquisition\Managers' instead!</p>
+<p>This bad behavior depends on A) there not already being an entry for this security principal in the LSA cache, and B) security principals with the same names existing in both domains, and the use of isolated names.</p>
+<p>Not only does BigCo.com not have any control over what the folks over at Acquisition.com decide to name their security groups, but this also works with well-known groups that exist in <i>every</i> domain, such as Domain Users, Domain Admins, etc..</p>
+<p>Back in 2019, there were long discussions and heated emails between me and the product group about this, and in the end, I (and the customer) lost and nothing was done.</p>
+<p>I was frustrated at the time, and so was the customer, but that was five years ago. I had forgotten all about it until just today when the topic came up again, only this time concerning LSA cache performance, and my input was specifically asked for by the PG this time around. If there is to be any redesign of the LSA lookup cache, it needs to ensure both performance <i>and</i> accuracy. We'll see what happens this time around.</p>
