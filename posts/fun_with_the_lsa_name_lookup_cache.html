@@ -23,8 +23,8 @@ S-1-5-21-2824238498-1740521074-3173497499-3855
 <li>Now the user attempts to execute that scheduled task that only members of bigco\managers should have been able to execute. The machine performs a name lookup for the isolated name 'Managers'. It is satisfied by the local LSA cache, no need to consult a DC:</li>
 <pre>
 S-1-5-21-2824238498-1740521074-3173497499-3855
-<li>The user is deemed to be a member of the 'Managers' group and is allowed to execute the scheduled task.</li>
 </pre>
+<li>The user is deemed to be a member of the 'Managers' group and is allowed to execute the scheduled task.</li>
 </ul>
 <p>This "cache pollution" means that the LSA will respond differently when asked to look up an isolated name (i.e., a name with no domain qualifier,) depending on which qualified name was looked up first!</p>
 <p>In other words, if you search for 'BigCo\Managers' first, that response will be cached locally, and then subsequent queries for 'Managers' will return the SID for 'BigCo\Managers' as expected. It's expected because BigCo is the primary domain of the machine making the query. But if you search for 'Acquisition\Managers' first, <i>that</i> response gets put into the cache and subsequent queries for 'Managers' will return the SID for 'Acquisition\Managers' instead!</p>
