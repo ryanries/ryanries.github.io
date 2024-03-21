@@ -67,3 +67,9 @@ a {
 	text-decoration-color: #DDDDDD;
 	text-decoration-thickness: 1px;
 }
+
+.highlight {
+	background-color: yellow;
+	font-weight: bold;
+	color: black;
+}
