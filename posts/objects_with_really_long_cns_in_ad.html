@@ -1,16 +1,17 @@
 <h1><a href="./?title=objects_with_really_long_cns_in_ad.html">Objects with Really Long CNs in Active Directory</a></h1>
 <p>July 18th, 2024</p>
+<p>Update July 19th 2024: Made some clarifications to the article to clarify that this is on AD object *rename*, not creation of a new object.</p>
 <p>Something I haven't thought about in a couple years suddenly came up twice today, by two separate people.</p>
 <p>Back in 2018, I was sitting through a Kepner-Tregoe training class, and I had gotten a little bored, so I started looking at some of the tickets
-	in my work queue. A customer had raised a concern that he was able to create objects such as users and security groups in Active Directory that
+	in my work queue. A customer had raised a concern that he was able to rename objects such as users and security groups in Active Directory that
 	had <a href="https://learn.microsoft.com/en-us/windows/win32/adschema/a-cn">CNs (common names)</a> that were longer than 64 characters. This wasn't
 	causing any particular issues for the customer at the time but it was concerning as that seemed to violate the 64 character 
 	<a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-ada3/83b00fc4-1312-40ba-991d-b410524e2778">rangeUpper</a> schema constraint.
 	In other words, the Active Directory schema <i>supposedly</i> didn't allow CNs longer than 64 characters, yet, here we are staring at this object in AD:</p>
 <pre>CN=A_Really_Long_Security_Group_With_A_Very_Specific_Name_So_That_No_One_Gets_Confused_As_To_The_Groups_Purpose,OU=groups,DC=contoso,DC=com</pre>
-<p>With a few minutes of code review, I could see that the code path where things like schema constraints are checked during new AD object creation had
+<p>With a few minutes of code review, I could see that the code path where things like schema constraints are checked during AD object rename had
 	been significantly rewritten between 2008R2 to 2012R2. In effect, the code in 2008R2 and below domain controllers was correct - AD would reject the
-	creation of the new object if the proposed CN was >64 characters. But in 2012R2 and 2016 domain controllers, this constraint was simply not honored,
+	renaming of the object if the proposed CN was &gt;64 characters. But in 2012R2 and 2016 domain controllers, this constraint was simply not honored,
 	allowing the user to go hog wild with whatever name they wanted.</p>
 <p>I can't just show the code, but the general idea is that a new parameter was added to the ReplaceAtt function in 2012R2. The developer, who I'm sure was 
 	bleary-eyed from trying to push the new Server 2012R2 out the door by the deadline, and who was probably up all night upgrading this code, had mistakenly hard-coded 
@@ -18,7 +19,7 @@
 <p>So I filed the bug. The PG decided that it wasn't that important at the time, since the customer wasn't really demanding we fix it and wasn't experiencing any problems because of it. 
 	It was more just like, a curiosity. One of those happy little imperfections that adds character, the kind that Bob Ross would just blur into a slightly curious-looking tree.</p>
 <p>Instead the bug was punted to vNext, which was Server 2019 at the time. So without looking to be sure, I believe the issue is fixed in 2019. But to this day, you should still be able to
-	create objects in AD with CNs that violate the rangeUpper schema constraint on 2012R2 and 2016 DCs. This won't have any affect on AD replication, because the DRA always ignores
+	rename objects in AD with CNs that violate the rangeUpper schema constraint on 2012R2 and 2016 DCs. This won't have any affect on AD replication, because the DRA always ignores
 	schema constrains and just replicates stuff without checking whether it violates schema constraints or not.</p>	
 <p>But apparently it's still causing some people out there some issues, or at least minor confusion, still in 2024. For example, it may cause issues with
 	Azure AD (Entra) Connect when trying to sync attributes from on-prem AD to the cloud. It would also cause issues with any application that reads the AD schema and assumes
