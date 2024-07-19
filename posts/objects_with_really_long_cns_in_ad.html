@@ -18,7 +18,7 @@
 <p>So I filed the bug. The PG decided that it wasn't that important at the time, since the customer wasn't really demanding we fix it and wasn't experiencing any problems because of it. 
 	It was more just like, a curiosity. One of those happy little imperfections that adds character, the kind that Bob Ross would just blur into a slightly curious-looking tree.</p>
 <p>Instead the bug was punted to vNext, which was Server 2019 at the time. So without looking to be sure, I believe the issue is fixed in 2019. But to this day, you should still be able to
-	create objects in AD with CNs that violate the rangeUpper schema constraint. This won't have any affect on AD replication, because the DRA always ignores
+	create objects in AD with CNs that violate the rangeUpper schema constraint on 2012R2 and 2016 DCs. This won't have any affect on AD replication, because the DRA always ignores
 	schema constrains and just replicates stuff without checking whether it violates schema constraints or not.</p>	
 <p>But apparently it's still causing some people out there some issues, or at least minor confusion, still in 2024. For example, it may cause issues with
 	Azure AD (Entra) Connect when trying to sync attributes from on-prem AD to the cloud.</p>
