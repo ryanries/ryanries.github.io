@@ -1,0 +1,9 @@
+<h1><a href="./?title=passfiltex_v1.6.2.html">PassFiltEx v1.6.2</a></h1>
+<p>Febuary 1st, 2025</p>
+<p>I released a new version of my Active Directory password filter today: <a href="https://github.com/ryanries/PassFiltEx/releases/tag/v1.6.2">PassFiltEx v1.6.2.</a></p>
+<p>Highlights of this release include:</p>
+<p>The "ApplyToTheseGroupsOnly" setting. By specifying a comma-separated list of global security groups in this registry entry, you can have the password filter apply only to the groups you specify. Everyone else who is not a member of any of the specified groups gets a free pass from this password filter. If ApplyToTheseGroupsOnly is not used, then everyone's password will be checked. This currently only checks direct membership in global security groups. It does not expand nested group membership. This choice was made for performance reasons.</p>
+<p>This will only matter to me, but I ditched MSVC for an entirely command line-based clang build. This was because the Visual Studio IDE was crushing my soul with its bugs and I had to break free from its prison.</p>
+<p>Changed all instances of "blacklist" to "blocklist". IMPORTANT The default blocklist filename changed to PassFiltExBlocklist.txt. If you are upgrading from a previous version and you use the default filename, you must change your blocklist filename accordingly!</p>
+<p>From v1.5.55 - Added the ability to have SUPER-blocked strings in the blocklist text file.
+Now any line in the blocklist text file that begins with an exclamation mark (!) is considered to be SUPER-blocked, meaning that string (excluding the preceding exclamation mark) may not appear anywhere in the password, regardless of the password's overall length. In other words, TokenPercentageOfPassword will be ignored for super-blocked strings.</p>
