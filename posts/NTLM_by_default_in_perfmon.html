@@ -168,4 +168,4 @@ DbgID ThreadID    User Kernel Position      Approx. System Time
 <p>For example, consider the PowerShell Get-Counter cmdlet, where using the "\\" UNC syntax is <b>required.</b></p>
 <p>The authentication team is not interested in implementing a fix for that very reason. They will just say "it is the application's responsibility to pass us a valid SPN if they want to use Kerberos." I can't really blame them, as I said, I'm sure any conceivable change they made would end up causing someone else to break.</p>
 <p>I'll see if the Perfmon team will consider at least removing the "\\" prefix by default from the perfmon GUI. But again, we couldn't just stop supporting that syntax either. Imagine all the millions of people around the world who have been accessing remote perf counters in scripts, monitoring tools, etc., for decades, that would break if we stopped allowing that syntax.</p>
-
+<p>All I know for sure is that the current behavior of "NTLM by default" cannot continue.</p>
